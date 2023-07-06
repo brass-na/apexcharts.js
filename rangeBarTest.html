@@ -1,0 +1,300 @@
+<html lang="ja">
+
+<head>
+    <script src="dist/apexcharts.js"></script>
+    <script>
+        var data = [
+            {
+                x: "Booth3",
+                y: [
+                    new Date("2019-03-08T05:00:00.000Z").getTime(),
+                    new Date("2019-03-08T11:00:00.000Z").getTime()
+                ],
+                meta: "5 - 11"
+            },
+
+            {
+                x: "Booth3",
+                y: [
+                    new Date("2019-03-08T10:00:00.000Z").getTime(),
+                    new Date("2019-03-08T14:00:00.000Z").getTime()
+                ],
+                meta: "10 - 14"
+            },
+            {
+                x: "Booth3",
+                y: [
+                    new Date("2019-03-08T14:00:00.001Z").getTime(),
+                    new Date("2019-03-08T21:00:00.000Z").getTime()
+                ],
+                meta: "14 - 21"
+            },
+            {
+                x: "Booth4",
+                y: [
+                    new Date("2019-03-08T02:00:00.000Z").getTime(),
+                    new Date("2019-03-08T22:00:00.000Z").getTime()
+                ],
+                meta: "meta2"
+            }
+
+        ];
+        function start() {
+            var options = {
+                series: [
+                    {
+                        name: "base",
+                        data: data
+                    },
+
+                ],
+                dataLabels: {//ここにバー上の文字！！
+                    enabled: true,
+                    textAnchor: 'end',//ほぼ効いてないかも
+                    style: {
+                        colors: ['#000'],
+                        fontSize: '14pt'
+                    },
+                    // textAnchor:"middle",
+                    formatter: (val, opts) => {
+                        // console.log(val);
+                        // console.log(opts);
+                        const item = data[opts.dataPointIndex];
+                        return item.meta;
+                    },
+                    // formatter: (value: string, opts?: object | undefined) => 'aaaaaaaa',
+                },
+                title: {//左上のタイトル
+                    text: 'ここにタイトル-2023/06/12',
+                    align: 'left',
+                    margin: 10,
+                    offsetX: 0,
+                    offsetY: 0,
+                    floating: false,
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        fontFamily: undefined,
+                        color: '#263238'
+                    },
+                },
+                tooltip: {//ツールチップ
+                    enabled: true,
+                    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                        return '<div class="arrow_box">' +
+                            '<span>' + w.config.series[seriesIndex].data[dataPointIndex].meta + '</span>' +
+                            '</div>'
+                    },
+                },
+                grid: {//罫線
+                    show: true,
+                    borderColor: "#000000",
+                    strokeDashArray: 0,
+                    position: 'back',
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    row: {
+                        colors: ['#fff'],
+                        opacity: 0.5
+                    },
+                    column: {
+                        colors: ['#fff'],
+                        opacity: 0.5
+                    },
+                    padding: {
+                        top: 50,
+                        right: 50,
+                        bottom: 0,
+                        left: 50
+                    },
+                },
+                annotations: {
+                    //ここはいらない
+                    xaxis: [{
+                        label: {
+                            text: 'ccccccc'
+                        }
+                    }]
+
+                },
+                chart: {
+                    //クリックイベント！クリニック座標は取れていないかも。確認の余地あり
+                    events: {
+                        click: (event, chartContext, config) => {
+                            // console.log(event);
+                            // console.log(chartContext);
+                            // console.log(config);
+                            // console.log(config.dataPointIndex);
+                        },
+                        mouseMove: function (event, chartContext, config) {
+                            // console.log(event);
+                            // console.log(chartContext);
+                            // console.log(config);
+                        },
+                        dataPointSelection: function (event, chartContext, config) {
+                            //座標ではなさそう(オブジェクトごとの値っぽい)
+                            var selectedValue = config.w.globals.series[config.seriesIndex][config.dataPointIndex];
+                            // console.log(selectedValue);
+                        },
+                        selection: function (chartContext, { xaxis, yaxis }) {
+                            console.log(chartContext);
+                            console.log(xaxis);
+                            console.log(yaxis);
+                        },
+                        dataPointMouseEnter: function (event, chartContext, config) {
+                            console.log(event);
+                            console.log(chartContext);
+                            console.log(config);
+                        }
+                    },
+                    height: 450,
+                    type: "rangeBar",
+                    zoom: {//拡大禁止
+                        enabled: false,
+                        type: 'x',
+                        autoScaleYaxis: false,
+                        zoomedArea: {
+                            fill: {
+                                color: '#90CAF9',
+                                opacity: 0.4
+                            },
+                            stroke: {
+                                color: '#0D47A1',
+                                opacity: 0.4,
+                                width: 1
+                            }
+                        }
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 0,
+                        borderRadiusApplication: 'around',
+                        borderRadiusWhenStacked: 'last',
+                        columnWidth: '70%',
+                        barHeight: '80%',
+                        distributed: true,
+                        rangeBarOverlap: false,
+                        rangeBarGroupRows: false,
+                        hideZeroBarsWhenGrouped: true,
+                        isDumbbell: false,
+                        dumbbellColors: undefined,
+                        isFunnel: false,
+                        isFunnel3d: true,
+                        colors: {
+                            ranges: [{
+                                from: 0,
+                                to: 0,
+                                color: undefined
+                            }],
+                            backgroundBarColors: [],
+                            backgroundBarOpacity: 1,
+                            backgroundBarRadius: 0,
+                        },
+                        dataLabels: {
+                            position: 'top',
+                            maxItems: 100,
+                            hideOverflowingLabels: true,
+                            total: {
+                                enabled: false,
+                                formatter: undefined,
+                                offsetX: 0,
+                                offsetY: 0,
+                                style: {
+                                    color: '#373d3f',
+                                    fontSize: '12px',
+                                    fontFamily: undefined,
+                                    fontWeight: 600
+                                }
+                            }
+                        }
+                    },
+                },
+
+                xaxis: {
+                    tooltip: {
+                        // enabled:true,       
+                        // formatter: (value: string, opts?: object | undefined) => 'YY/MM',
+                        // offsetY: 0,
+                        // style: {
+                        // },          
+                    },
+                    //ここ!!x軸を1日単位にする
+                    min: new Date("2019-03-08").getTime(),
+                    max: new Date("2019-03-09").getTime(),
+                    type: "datetime",
+
+                    labels: {
+                        show: true,
+                        rotate: -45,
+                        rotateAlways: false,
+                        hideOverlappingLabels: true,
+                        showDuplicates: false,
+                        trim: false,
+                        minHeight: undefined,
+                        maxHeight: 120,
+                        style: {
+                            colors: [],
+                            fontSize: '12px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            cssClass: 'apexcharts-xaxis-label',
+                        },
+                        offsetX: 0,
+                        offsetY: 0,
+                        format: undefined,
+                        formatter: undefined,
+                        datetimeUTC: true,
+                        datetimeFormatter: {
+                            year: 'yyyy',
+                            month: "MMM 'yy",
+                            day: 'dd MMM',
+                            hour: 'HH:mm',
+                        },
+                    },
+                },
+                yaxis: {
+                    show: true
+                },
+                fill: {
+                    type: "gradient",
+                    gradient: {
+                        shade: "light",
+                        type: "vertical",
+                        shadeIntensity: 0.25,
+                        gradientToColors: undefined,
+                        inverseColors: true,
+                        opacityFrom: 1,
+                        opacityTo: 1,
+                        stops: [0, 0, 100, 100] //[50, 0, 100, 100] 一色になる
+                    }
+                },
+                legend: {//凡例コンテナ。不要
+                    show: false,
+                    position: "bottom",//top or bottom
+                    horizontalAlign: "left",
+                },
+            }
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+            chart.render();
+        }
+
+    </script>
+</head>
+
+<body onload="start()">
+    <div id="chart"></div>
+</body>
+
+</html>

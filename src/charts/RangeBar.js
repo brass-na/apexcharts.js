@@ -247,10 +247,12 @@ class RangeBar extends Bar {
     const rowIndex = w.globals.labels
       .map((_) => (Array.isArray(_) ? _.join(' ') : _))
       .indexOf(labelX)
+    const overlappedIndexHorizontal = w.globals.seriesRange[i].findIndex(
+      (tx) => tx.x === labelX && /*tx.overlaps.length > 0*/ tx.maxLength > 0
+    )
     const overlappedIndex = w.globals.seriesRange[i].findIndex(
       (tx) => tx.x === labelX && tx.overlaps.length > 0
     )
-
     if (this.isHorizontal) {
       if (w.config.plotOptions.bar.rangeBarGroupRows) {
         barYPosition = srty + yDivision * rowIndex
@@ -258,19 +260,28 @@ class RangeBar extends Bar {
         barYPosition = srty + barHeight * this.visibleI + yDivision * rowIndex
       }
 
-      if (overlappedIndex > -1 && !w.config.plotOptions.bar.rangeBarOverlap) {
-        overlaps = w.globals.seriesRange[i][overlappedIndex].overlaps
-
-        if (overlaps.indexOf(rangeName) > -1) {
-          barHeight = initPositions.barHeight / overlaps.length
-
+      if (overlappedIndexHorizontal > -1 && !w.config.plotOptions.bar.rangeBarOverlap) {
+        //overlaps = w.globals.seriesRange[i][overlappedIndex].overlaps
+        const series = w.globals.seriesRange[i][overlappedIndexHorizontal]
+        //if (overlaps.indexOf(rangeName) > -1) {
+        if (series.maxLength > 0) {
+          //barHeight = initPositions.barHeight / overlaps.length
+          barHeight = initPositions.barHeight / (series.maxLength + 1)
+          const rangeItem = series.yRangeArray.find(function(range) {
+            return (range.name === rangeName);
+          })
+          var range = rangeItem ? rangeItem.range : null;
+          if (!range || range.yIndex == null) {
+            range = {yIndex:0}
+          }
           barYPosition =
             barHeight * this.visibleI +
             (yDivision * (100 - parseInt(this.barOptions.barHeight, 10))) /
               100 /
               2 +
-            barHeight * (this.visibleI + overlaps.indexOf(rangeName)) +
-            yDivision * rowIndex
+            //barHeight * (this.visibleI + overlaps.indexOf(rangeName)) +
+            barHeight * (this.visibleI + range.yIndex) +
+            yDivision * rowIndex;
         }
       }
     } else {
@@ -298,7 +309,6 @@ class RangeBar extends Bar {
         }
       }
     }
-
     return {
       barYPosition,
       barXPosition,

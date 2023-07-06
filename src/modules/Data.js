@@ -189,6 +189,31 @@ export default class Data {
     }
   }
 
+  isOverrap(a1,a2,b1,b2){
+    var num1 = b2 - a1
+    var num2 = b1 - a2
+    
+    return !((num1 >= 0 && num2 >= 0) || (num1 <= 0 && num2 <= 0))
+  }
+
+  getYIndex(targetArr) {
+    var result = 0
+    const indexList = targetArr.map(function(item) { return item.yIndex });
+    indexList.sort(function (a, b) {
+      return a - b
+    })
+    targetArr.forEach(function(item, index) {
+      if (result != 0) return
+      if (item.yIndex != index) {
+        result = index
+      }
+    });
+    if (result == 0 && targetArr.length > 0) {
+      return targetArr.length
+    }
+    return result
+  }
+
   handleRangeData(ser, i) {
     const gl = this.w.globals
 
@@ -198,6 +223,8 @@ export default class Data {
     } else if (this.isFormatXY()) {
       range = this.handleRangeDataFormat('xy', ser, i)
     }
+    var isOverrap = this.isOverrap
+    var getYIndex = this.getYIndex
 
     gl.seriesRangeStart.push(range.start)
     gl.seriesRangeEnd.push(range.end)
@@ -208,7 +235,20 @@ export default class Data {
     gl.seriesRange.forEach((sr, si) => {
       if (sr) {
         sr.forEach((sarr, sarri) => {
+          sarr.yRangeArray = []
+          sarr.maxLength = 0;
           sarr.y.forEach((arr, arri) => {
+            var tempArr = sarr.yRangeArray.filter(function(item) {
+              return (isOverrap(item.range.y1,item.range.y2,arr.y1,arr.y2))
+            }).map(function(item){ return item.range})
+
+            arr.yIndex = getYIndex(tempArr)
+            if (sarr.maxLength < arr.yIndex) {
+              sarr.maxLength = arr.yIndex;
+            }
+            sarr.yRangeArray.push({name:arr.rangeName,range:arr});
+            
+            //orignal
             for (let sri = 0; sri < sarr.y.length; sri++) {
               if (arri !== sri) {
                 const range1y1 = arr.y1
